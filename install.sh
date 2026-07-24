@@ -25,9 +25,10 @@ trap cleanup EXIT INT TERM
 # ==============================================================================
 LANG_MODE="en"
 PROJECT_NAME="NyxNiri"
-REPO_URL="https://github.com/ech678/NyxNiri.git"
+REPO_URL="https://github.com/Deslo1n/NyxNiri.git"
 CACHE_DIR="$HOME/.cache/NyxNiri"
 TEMP_WORKDIR=""
+DEPLOY_COUNT=0
 
 if [ -n "${BASH_SOURCE[0]}" ] && [ -f "${BASH_SOURCE[0]}" ]; then
     REAL_SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}" 2>/dev/null || echo "${BASH_SOURCE[0]}")"
@@ -102,7 +103,7 @@ msg() {
             menu_opt7) echo -e "  \e[1;32m7)\e[0m 🐛 生成 Bug Report 报告 (Generate Bug Report)" ;;
             menu_opt8) echo -e "  \e[1;31m8)\e[0m 🗑️  卸载与复原环境 (Uninstall NyxNiri)" ;;
             menu_opt9) echo -e "  \e[1;31m9)\e[0m ❌ 退出 (Exit)" ;;
-            menu_prompt) echo -e "请选择操作 [1-9]: " ;;
+            menu_prompt) echo -e "请选择操作 [1-10]: " ;;
             invalid_opt) echo -e "\e[1;31m[-] 无效的选项，请重新选择。\e[0m" ;;
             press_any_key) echo -e "\n按任意键返回主菜单..." ;;
             generating_report) echo -e "\n\e[1;34m🐛 正在收集系统诊断数据并生成 Bug Report 报告...\e[0m" ;;
@@ -172,6 +173,20 @@ msg() {
             ask_backup_again) echo -e "检测到今天已备份过配置，是否重新备份？[y/N]: " ;;
             ask_backup_before_deploy) echo -e "是否在部署前备份当前配置？[Y/n]: " ;;
             ask_keep_monitor) echo -e "检测到已存在显示器配置文件 ~/.config/niri/monitor.kdl，是否保留当前显示器配置？[Y/n]: " ;;
+            ask_auto_detect_monitor) echo -e "是否使用 nwg-displays 自动检测并生成适配本机的显示器配置？[Y/n]: " ;;
+            auto_detecting_monitor) echo -e "\n\e[1;34m🔍 正在使用 nwg-displays 自动检测显示器配置...\e[0m" ;;
+            auto_detect_done) echo -e "\e[1;32m✅ 显示器配置已自动生成！已保存至: $1\e[0m" ;;
+            auto_detect_failed) echo -e "\e[1;31m[-] 自动检测失败: $1\e[0m" ;;
+            ask_enable_services) echo -e "\n\e[1;36m🚀 是否启用 Greetd？(登录后将自动启动 Niri)\e[0m" ;;
+            ask_enable_services_hint) echo -e "   [Y] 立即启动并设为开机自启 (推荐)\e[0m" ;;
+            ask_enable_services_hint2) echo -e "   [n] 仅设为开机自启（不立即启动）\e[0m" ;;
+            ask_enable_services_prompt) echo -e "请选择 [Y/n]: " ;;
+            enabling_services_now) echo -e "\n\e[1;34m⚙️  正在启用并启动 Greetd ...\e[0m" ;;
+            enabling_services_boot) echo -e "\n\e[1;34m⚙️  正在设置 Greetd 为开机自启...\e[0m" ;;
+            service_enabled) echo -e "\e[1;32m✅ $1 已成功启用！\e[0m" ;;
+            service_started) echo -e "\e[1;32m✅ $1 已成功启动！Niri 将通过 Greetd 自动运行。\e[0m" ;;
+            service_enable_failed) echo -e "\e[1;33m⚠️  启用 $1 失败（可能已启用或权限不足）\e[0m" ;;
+            service_start_failed) echo -e "\e[1;31m[-] 启动 $1 失败，请手动执行: sudo systemctl start $1\e[0m" ;;
         esac
     else
         case "$key" in
@@ -192,7 +207,7 @@ msg() {
             menu_opt7) echo -e "  \e[1;32m7)\e[0m 🐛 Generate Bug Report" ;;
             menu_opt8) echo -e "  \e[1;31m8)\e[0m 🗑️  Uninstall NyxNiri" ;;
             menu_opt9) echo -e "  \e[1;31m9)\e[0m ❌ Exit" ;;
-            menu_prompt) echo -e "Please select an option [1-9]: " ;;
+            menu_prompt) echo -e "Please select an option [1-10]: " ;;
             invalid_opt) echo -e "\e[1;31m[-] Invalid option, please try again.\e[0m" ;;
             press_any_key) echo -e "\nPress any key to return to main menu..." ;;
             generating_report) echo -e "\n\e[1;34m🐛 Collecting system diagnostic data and generating Bug Report...\e[0m" ;;
@@ -262,6 +277,20 @@ msg() {
             ask_backup_again) echo -e "A backup has already been made today. Do you want to back up again? [y/N]: " ;;
             ask_backup_before_deploy) echo -e "Do you want to back up current configs before deploying? [Y/n]: " ;;
             ask_keep_monitor) echo -e "Existing monitor config ~/.config/niri/monitor.kdl detected. Preserve current monitor settings? [Y/n]: " ;;
+            ask_auto_detect_monitor) echo -e "Use nwg-displays to auto-detect and generate optimized display configuration for this machine? [Y/n]: " ;;
+            auto_detecting_monitor) echo -e "\n\e[1;34m🔍 Using nwg-displays to auto-detect display configuration...\e[0m" ;;
+            auto_detect_done) echo -e "\e[1;32m✅ Display configuration auto-generated! Saved to: $1\e[0m" ;;
+            auto_detect_failed) echo -e "\e[1;31m[-] Auto-detection failed: $1\e[0m" ;;
+            ask_enable_services) echo -e "\n\e[1;36m🚀 Enable Greetd? (It will start Niri automatically after login)\e[0m" ;;
+            ask_enable_services_hint) echo -e "   [Y] Start now and enable at boot (Recommended)\e[0m" ;;
+            ask_enable_services_hint2) echo -e "   [n] Enable at boot only (don't start now)\e[0m" ;;
+            ask_enable_services_prompt) echo -e "Select [Y/n]: " ;;
+            enabling_services_now) echo -e "\n\e[1;34m⚙️  Enabling and starting Greetd ...\e[0m" ;;
+            enabling_services_boot) echo -e "\n\e[1;34m⚙️  Setting Greetd to auto-start at boot...\e[0m" ;;
+            service_enabled) echo -e "\e[1;32m✅ $1 enabled successfully!\e[0m" ;;
+            service_started) echo -e "\e[1;32m✅ $1 started successfully! Niri will run via Greetd.\e[0m" ;;
+            service_enable_failed) echo -e "\e[1;33m⚠️  Failed to enable $1 (may already be enabled or permission issue)\e[0m" ;;
+            service_start_failed) echo -e "\e[1;31m[-] Failed to start $1. Please run manually: sudo systemctl start $1\e[0m" ;;
         esac
     fi
 }
@@ -318,7 +347,7 @@ ensure_repo() {
             echo "Testing connection to github.com..."
             if ! curl -I -s --connect-timeout 3 https://github.com >/dev/null 2>&1; then
                 echo "⚠️ Connection to github.com failed. Switching to domestic mirror (bgithub)..."
-                active_repo_url="https://bgithub.xyz/ech678/NyxNiri.git"
+                active_repo_url="https://v4.gh-proxy.org/${REPO_URL}"
             fi
             
             git clone "$active_repo_url" "$CACHE_DIR"
@@ -398,12 +427,25 @@ DEPS=(
     "swaylock"
     "ttf-jetbrains-mono-nerd"
     "noto-fonts-cjk"
+    "nwg-displays"
+    "xwayland-satellite"
+    "greetd"
+    "dbus"
+    "polkit"
+    "alsa-utils"
+    "alsa-firmware"
+    "pipewire"
+    "pipewire-pulse"
+    "wireplumber"
+    "pavucontrol"
 )
 
 # Packages only available via AUR (not in official repos)
 AUR_DEPS=(
     "noctalia"
     "mpvpaper"
+    "noctalia-greeter"
+    "fcitx-rime"
 )
 
 DEP_STATUS=()
@@ -647,6 +689,12 @@ backup_configs() {
         echo "$note" > "$backup_dir/note.txt"
     fi
     
+    if [ -e "/etc/greetd/config.toml" ]; then
+        mkdir -p "$backup_dir/greetd"
+        sudo cp -rP "/etc/greetd/config.toml" "$backup_dir/greetd/"
+        echo "  Backed up: /etc/greetd/config.toml"
+    fi
+
     msg backup_done "$backup_dir"
 }
 
@@ -848,6 +896,8 @@ install_configs() {
     msg copying_configs
     local repo_config_dir="$REPO_DIR/v2"
     
+    systemctl --user enable --now pipewire pipewire-pulse wireplumber
+
     local configs=(
         "fish"
         "noctalia"
@@ -858,7 +908,7 @@ install_configs() {
     )
     
     mkdir -p "$HOME/.config"
-    
+
     for item in "${configs[@]}"; do
         local src="$repo_config_dir/$item"
         local dest="$HOME/.config/$item"
@@ -885,6 +935,32 @@ install_configs() {
             echo "  Deployed: ~/.config/$item"
         fi
     done
+    
+    # Auto-detect display configuration using nwg-displays if available
+    if command -v nwg-displays >/dev/null 2>&1 && [ -d "$HOME/.config/niri" ]; then
+        read -p "$(msg ask_auto_detect_monitor)" auto_detect_choice < /dev/tty
+        if [[ "$auto_detect_choice" =~ ^[Yy]$ || -z "$auto_detect_choice" ]]; then
+            msg auto_detecting_monitor
+            local monitor_kdl="$HOME/.config/niri/monitor.kdl"
+            local temp_output=$(mktemp)
+            
+            if nwg-displays --headless --output-file "$temp_output" 2>/dev/null; then
+                if [ -f "$temp_output" ] && [ -s "$temp_output" ]; then
+                    cp "$temp_output" "$monitor_kdl"
+                    rm -f "$temp_output"
+                    msg auto_detect_done "$monitor_kdl"
+                else
+                    rm -f "$temp_output"
+                    msg auto_detect_failed "Generated output file is empty or missing"
+                fi
+            else
+                rm -f "$temp_output"
+                msg auto_detect_failed "nwg-displays execution failed (is Niri running?)"
+            fi
+        fi
+    elif ! command -v nwg-displays >/dev/null 2>&1; then
+        echo -e "\e[1;33mℹ️  Note: nwg-displays not found, skipping auto-detection. Install it via dependency menu for this feature.\e[0m]"
+    fi
     
     local pics_dir=$(xdg-user-dir PICTURES 2>/dev/null)
     [ -z "$pics_dir" ] && pics_dir="$HOME/Pictures"
@@ -938,6 +1014,15 @@ install_configs() {
         "
     fi
     
+    if [ -f "$REPO_DIR/greetd/config.toml" ]; then
+        if [ -f "/etc/greetd/config.toml" ]; then
+            local backup_timestamp=$(date +%Y%m%d_%H%M%S)
+            sudo cp /etc/greetd/config.toml "/etc/greetd/config.toml.bak_${backup_timestamp}" 2>/dev/null || \
+                echo -e "\e[1;33m[警告] 无法备份原有 greetd 配置文件\e[0m"
+        fi
+        sudo cp "$REPO_DIR/greetd/config.toml" /etc/greetd/config.toml 2>/dev/null || true
+    fi
+
     msg copy_done
     
     # 3. Prompt for dependencies if missing
@@ -956,6 +1041,53 @@ install_configs() {
             run_dep_menu_loop
         fi
     fi
+    
+    DEPLOY_COUNT=$((DEPLOY_COUNT + 1))
+}
+
+# ==============================================================================
+# 5.5 Service Management (Greetd Display Manager)
+# ==============================================================================
+prompt_enable_services() {
+    if [ "$DEPLOY_COUNT" -eq 0 ]; then
+        echo ""
+        sleep 2
+        return 0
+    fi
+    
+    if ! command -v systemctl >/dev/null 2>&1; then
+        return 0
+    fi
+    
+    if ! systemctl list-unit-files greetd.service >/dev/null 2>&1; then
+        return 0
+    fi
+    
+    echo ""
+    msg ask_enable_services
+    msg ask_enable_services_hint
+    msg ask_enable_services_hint2
+    read -p "$(msg ask_enable_services_prompt)" enable_choice < /dev/tty
+    
+    if [[ "$enable_choice" =~ ^[Yy]$ || -z "$enable_choice" ]]; then
+        msg enabling_services_now
+        
+        sudo systemctl enable greetd.service >/dev/null 2>&1 && \
+            msg service_enabled "Greetd" || \
+            msg service_enable_failed "Greetd"
+        
+        sudo systemctl start greetd.service >/dev/null 2>&1 && \
+            msg service_started "Greetd" || \
+            msg service_start_failed "Greetd"
+    else
+        msg enabling_services_boot
+        
+        sudo systemctl enable greetd.service >/dev/null 2>&1 && \
+            msg service_enabled "Greetd [boot only]" || \
+            msg service_enable_failed "Greetd"
+    fi
+    
+    echo ""
 }
 
 # ==============================================================================
@@ -1070,9 +1202,10 @@ generate_bug_report() {
     {
         echo "# NyxNiri System Diagnostic Bug Report"
         echo "Generated at: $(date)"
-        echo "Author / Maintainer: ech678"
-        echo "Contact QQ: 2040244628 | Telegram: @Echoes678 | Linux Ricing QQ Group: 631425889"
-        echo "Repository: https://github.com/ech678/NyxNiri"
+        echo "Upstream Author / Maintainer: ech678"
+        echo "Downstream Maintainer: Deslo1n"
+        echo "Contact QQ: 1586418949 | Linux Ricing QQ Group: 631425889"
+        echo "Repository: https://github.com/Deslo1n/NyxNiri"
         echo ""
         echo "## 1. System Information"
         echo '```text'
@@ -1201,6 +1334,7 @@ main_menu() {
                 read -p "$(msg press_any_key)" -n 1 < /dev/tty
                 ;;
             9)
+                prompt_enable_services
                 exit 0
                 ;;
             *)

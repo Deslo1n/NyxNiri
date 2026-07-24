@@ -34,8 +34,9 @@ layout {
         proportion 0.33333
         proportion 0.5
         proportion 0.66667
+	proportion 1.0
     }
-    default-column-width { proportion 0.5; }
+    default-column-width { proportion 0.66667; }
     focus-ring {
         off
         width 0
@@ -358,7 +359,7 @@ binds {
     Mod+Shift+L          { move-column-right; }
     Mod+Shift+J          { move-window-down; }
     Mod+Shift+K          { move-window-up; }
-    Mod+T                { toggle-window-floating; }
+    Mod+ALT+Space                { toggle-window-floating; }
 
     Mod+F                { maximize-column; }
     Mod+Shift+F          { fullscreen-window; }
@@ -491,3 +492,8 @@ window-rule {
     default-column-width { fixed 532; }
     default-window-height { fixed 925; }
 }
+
+include "noctalia.kdl"
+
+spawn-at-startup "python3" "/home/Deslo1n/.config/niri/scripts/niri_tile_to_n.py"
+spawn-at-startup "xwayland-satellite"
