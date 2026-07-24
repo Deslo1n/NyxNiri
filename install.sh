@@ -453,23 +453,23 @@ DEP_SELECT=()
 
 check_all_deps() {
     for i in "${!DEPS[@]}"; do
-        local cmd="${DEPS[$i]}"
+        local pkg="${DEPS[$i]}"
         local is_installed=0
         
-        if [ "$cmd" = "inotify-tools" ]; then
-            cmd="inotifywait"
-        fi
-        
-        if [ "$cmd" = "ttf-jetbrains-mono-nerd" ]; then
+        if [ "$pkg" = "ttf-jetbrains-mono-nerd" ]; then
             if command -v fc-list >/dev/null 2>&1 && fc-list : family 2>/dev/null | grep -qi "JetBrainsMono"; then
                 is_installed=1
             fi
-        elif [ "$cmd" = "noto-fonts-cjk" ]; then
+        elif [ "$pkg" = "noto-fonts-cjk" ]; then
             if command -v fc-list >/dev/null 2>&1 && fc-list : family 2>/dev/null | grep -qi "Noto Sans CJK"; then
                 is_installed=1
             fi
+        elif [ "$pkg" = "inotify-tools" ]; then
+            if command -v inotifywait >/dev/null 2>&1; then
+                is_installed=1
+            fi
         else
-            if command -v "$cmd" >/dev/null 2>&1; then
+            if pacman -Qi "$pkg" >/dev/null 2>&1; then
                 is_installed=1
             fi
         fi
