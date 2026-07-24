@@ -1,9 +1,3 @@
-<div align="right">
-
-[简体中文](#项目概述)
-
-</div>
-
 <div align="center">
 
 <a id="nyxniri"></a>
@@ -29,155 +23,25 @@ _A calm, Material You desktop — Niri + Noctalia V5, for Arch / CachyOS_
 
 </div>
 
-<br/>
-
-## Overview
-
-**NyxNiri** is my personal desktop setup, built around the **Niri**
-scroll-tiling window manager and the **Noctalia V5** shell, for Arch Linux and
-CachyOS. It pulls Material You color palettes from a static or live wallpaper,
-keeps light/dark theming in sync across the whole system, and layers in a
-handful of terminal quality-of-life improvements.
-
-<br/>
-
-## 🛠️ NyxNiri Management CLI (`nyxniri`)
-
-NyxNiri comes with a built-in lightweight management tool `nyxniri` for snapshots, rollbacks, and diagnostics:
-
-| Command | Action / Purpose | Notes |
-| :--- | :--- | :--- |
-| `nyxniri` | Open interactive TUI control panel | Fast menu-driven access |
-| `nyxniri snapshot [note]` | Create a manual configuration snapshot | Saved to `~/.config/NyxNiri/backups/` |
-| `nyxniri rollback [index]` | Rollback configuration to a historical snapshot | Auto-saves pre-rollback safety snapshot |
-| `nyxniri list` | List all available configuration snapshots | Displays timestamp & note |
-| `nyxniri uninstall` | Safely uninstall NyxNiri (with auto archive) | Supports `--safe` or `--restore` |
-| `nyxniri purge` | Deep purge all NyxNiri configs, cache & wallpapers | Complete cleanup |
-| `nyxniri doctor` | Run System Doctor diagnostics | Health check for desktop components |
-
-<br/>
-
-## Installation
-
-### ⚡ Quick One-liner Install (Curl Pipe)
-
-```bash
-curl -sL https://raw.githubusercontent.com/ech678/NyxNiri/main/install.sh | bash
-```
-
-### 📦 Recommended Method (Git Repository)
-
-Clone the repository to your local machine for full git history and offline control:
-
-```bash
-git clone https://github.com/ech678/NyxNiri.git ~/NyxNiri
-cd ~/NyxNiri && ./install.sh
-```
-
-<details>
-<summary>🌐 Domestic Mirror (For users in China)</summary>
-
-```bash
-# Via GHProxy Mirror
-curl -sL https://ghproxy.net/https://raw.githubusercontent.com/ech678/NyxNiri/main/install.sh | bash
-```
-
-</details>
-
-<br/>
-
-## Stack
-
-| Component          | Choice / Details                 |
-| :----------------- | :------------------------------- |
-| **WM**             | Niri (scroll-tiling)             |
-| **Desktop shell**  | Noctalia V5                      |
-| **Live wallpaper** | mpvpaper                         |
-| **Terminal**       | Kitty                            |
-| **Shell / prompt** | Fish + Starship                  |
-| **Fonts**          | JetBrains Mono, Noto Sans CJK SC |
-
-<br/>
-
-## Acknowledgments
-
-<!-- Add more entries the same way: - [user/repo](url) — one-line reason -->
-
-- [RanXom/glassy-niri](https://github.com/RanXom/glassy-niri) — reference for
-  blur settings
-
-<br/>
-
-## Recommended Projects
-
-- [h465855hgg/noctalia-lyrics](https://github.com/h465855hgg/noctalia-lyrics) —
-  desktop lyrics widget for Noctalia
-- [Ocfeather/chrome-niri-opacity](https://github.com/Ocfeather/chrome-niri-opacity)
-  — automatically adjusts browser opacity for watching videos under Niri
-
-<br/>
-
-## FAQ & Troubleshooting
-
-### Noctalia is slow to start after logging into Niri
-
-If the wallpaper, bar, and widgets take several seconds — or minutes — to appear
-after login, check these two common causes first:
-
-**1. DDC/CI monitor scanning blocks startup (I2C timeout)** — Noctalia probes
-the I2C bus via `ddcutil` to detect monitor brightness controls. On some
-hardware — especially with NVIDIA drivers — this scan hangs the whole startup
-sequence.
-
-_Fix:_ disable DDC/CI under `[brightness]` in
-`~/.config/noctalia/noctalia-config.toml`:
-
-```toml
-[brightness]
-enable_ddcutil = false
-```
-
-**2. Corrupted local plugin repositories** — If the git index of a cached plugin
-repo gets corrupted or desynced, the `git checkout` Noctalia runs to unpack
-plugins on startup will hang. Check `~/.cache/noctalia/noctalia.log` for lines
-like `git checkout ... took 20000ms`.
-
-_Fix:_ force-reset the plugin caches:
-
-```bash
-git -C ~/.local/state/noctalia/plugins/sources/community/repo reset --hard HEAD
-git -C ~/.local/state/noctalia/plugins/sources/official/repo reset --hard HEAD
-```
-
-<br/>
-
-## 💬 Community & Contact
-
-If you encounter issues, find a bug, or want to discuss Linux ricing:
-
-- 🐧 **Developer QQ**: `2040244628`
-- ✈️ **Telegram**: [@Echoes678](https://t.me/Echoes678)
-- 💬 **Linux Ricing QQ Group**: `631425889`
-- 🐛 **Submit a Bug Report**: Run `./install.sh` and select `6) 🐛 Generate Bug Report` to export diagnostic logs, or open an [Issue](https://github.com/ech678/NyxNiri/issues) on GitHub.
-
-<br/>
-
-## 💖 Support & Sponsor
-
-Maintaining NyxNiri requires continuous testing, script optimization, and documentation updates. If this project improved your Linux experience:
-
-- ☕️ **Sponsor via Afdian**: [afdian.com/a/Echoes678](https://afdian.com/a/Echoes678)
-- ⭐️ **GitHub Star**: If you like this project, please consider leaving a Star on GitHub! Your support is my greatest motivation!
-
-<br/>
-
----
-
 <div align="right">
 
-[↑ English](#nyxniri)
+[English](#Disclaimer)
 
 </div>
+
+## 声明
+
+虽然这个仓库只是给我自用，大概率没人看到，但是如果有人看到了或者准备使用这个仓库，可以支持支持原作者
+[ech678](https://github.com/ech678)
+及
+[上游仓库](https://github.com/ech678/NyxNiri)
+
+</br>
+主要是进行了一些小的更改，如原dotfiles在不同屏幕比下可能会出现一些字体等样式变更，因此在脚本内添加了更加快捷（或防呆）的显示配置流程，以及添加了对习惯了hyprland模式窗口管理的用户更友好的第三方模块，使窗口创建时可以全屏显示，在窗口数量范围内自动缩放等小功能
+</br>
+
+以下是原作者的项目概述（如果闲着没事或许会有针对本仓库修改做出的更新？或许？吗？）
+</br>
 
 ## 项目概述
 
@@ -250,6 +114,7 @@ NyxNiri
 | <kbd>Super</kbd> + <kbd>H</kbd> / <kbd>Z</kbd> | 聚焦左列          |
 | <kbd>Super</kbd> + <kbd>C</kbd>                | 聚焦右列          |
 | <kbd>Super</kbd> + <kbd>J</kbd> / <kbd>K</kbd> | 聚焦上 / 下窗口   |
+| <kbd>Super</kbd> + <kbd>J</kbd> / <kbd>K</kbd> | 切换窗口比例      |
 
 **系统与桌面套件（Noctalia）**
 
@@ -395,3 +260,164 @@ git -C ~/.local/state/noctalia/plugins/sources/official/repo reset --hard HEAD
 - ⭐️ **GitHub Star**：如果喜欢本项目，欢迎在 GitHub 上点个 Star！你的支持是持续创作的最大动力！
 
 
+
+---
+
+
+<div align="right">
+
+[简体中文](#声明)
+
+</div>
+
+## Disclaimer
+
+Although this repository is just for my personal use and probably no one will see it, if someone does come across it or intends to use this repository, please consider supporting the original author [ech678](https://github.com/ech678)
+and the [upstream repository](https://github.com/ech678/NyxNiri), too!
+
+</br>
+The main changes include some minor adjustments, such as font and style modifications for the original dotfiles on different screen size (Now this script will let you set display settings through nwg-displays, which can make the configuration easier and reduce troubles from first-time users), as well as adding third-party modules that are more friendly to Hyprland migrants and who loves Hyperland's windows management style, enabling windows to be displayed in fullscreen upon creation, auto-scaling within the window count range, and other small features.
+</br>
+
+Below is the original author's project overview (if I have nothing better to do, maybe there will be updates specific to this repository's modifications? Maybe? Who knows?)
+</br>
+
+## Overview
+
+**NyxNiri** is my personal desktop setup, built around the **Niri**
+scroll-tiling window manager and the **Noctalia V5** shell, for Arch Linux and
+CachyOS. It pulls Material You color palettes from a static or live wallpaper,
+keeps light/dark theming in sync across the whole system, and layers in a
+handful of terminal quality-of-life improvements.
+
+<br/>
+
+## 🛠️ NyxNiri Management CLI (`nyxniri`)
+
+NyxNiri comes with a built-in lightweight management tool `nyxniri` for snapshots, rollbacks, and diagnostics:
+
+| Command | Action / Purpose | Notes |
+| :--- | :--- | :--- |
+| `nyxniri` | Open interactive TUI control panel | Fast menu-driven access |
+| `nyxniri snapshot [note]` | Create a manual configuration snapshot | Saved to `~/.config/NyxNiri/backups/` |
+| `nyxniri rollback [index]` | Rollback configuration to a historical snapshot | Auto-saves pre-rollback safety snapshot |
+| `nyxniri list` | List all available configuration snapshots | Displays timestamp & note |
+| `nyxniri uninstall` | Safely uninstall NyxNiri (with auto archive) | Supports `--safe` or `--restore` |
+| `nyxniri purge` | Deep purge all NyxNiri configs, cache & wallpapers | Complete cleanup |
+| `nyxniri doctor` | Run System Doctor diagnostics | Health check for desktop components |
+
+<br/>
+
+## Installation
+
+### ⚡ Quick One-liner Install (Curl Pipe)
+
+```bash
+curl -sL https://raw.githubusercontent.com/ech678/NyxNiri/main/install.sh | bash
+```
+
+### 📦 Recommended Method (Git Repository)
+
+Clone the repository to your local machine for full git history and offline control:
+
+```bash
+git clone https://github.com/ech678/NyxNiri.git ~/NyxNiri
+cd ~/NyxNiri && ./install.sh
+```
+
+<details>
+<summary>🌐 Domestic Mirror (For users in China)</summary>
+
+```bash
+# Via GHProxy Mirror
+curl -sL https://ghproxy.net/https://raw.githubusercontent.com/ech678/NyxNiri/main/install.sh | bash
+```
+
+</details>
+
+<br/>
+
+## Stack
+
+| Component          | Choice / Details                 |
+| :----------------- | :------------------------------- |
+| **WM**             | Niri (scroll-tiling)             |
+| **Desktop shell**  | Noctalia V5                      |
+| **Live wallpaper** | mpvpaper                         |
+| **Terminal**       | Kitty                            |
+| **Shell / prompt** | Fish + Starship                  |
+| **Fonts**          | JetBrains Mono, Noto Sans CJK SC |
+
+<br/>
+
+## Acknowledgments
+
+<!-- Add more entries the same way: - [user/repo](url) — one-line reason -->
+
+- [RanXom/glassy-niri](https://github.com/RanXom/glassy-niri) — reference for
+  blur settings
+
+<br/>
+
+## Recommended Projects
+
+- [h465855hgg/noctalia-lyrics](https://github.com/h465855hgg/noctalia-lyrics) —
+  desktop lyrics widget for Noctalia
+- [Ocfeather/chrome-niri-opacity](https://github.com/Ocfeather/chrome-niri-opacity)
+  — automatically adjusts browser opacity for watching videos under Niri
+
+<br/>
+
+## FAQ & Troubleshooting
+
+### Noctalia is slow to start after logging into Niri
+
+If the wallpaper, bar, and widgets take several seconds — or minutes — to appear
+after login, check these two common causes first:
+
+**1. DDC/CI monitor scanning blocks startup (I2C timeout)** — Noctalia probes
+the I2C bus via `ddcutil` to detect monitor brightness controls. On some
+hardware — especially with NVIDIA drivers — this scan hangs the whole startup
+sequence.
+
+_Fix:_ disable DDC/CI under `[brightness]` in
+`~/.config/noctalia/noctalia-config.toml`:
+
+```toml
+[brightness]
+enable_ddcutil = false
+```
+
+**2. Corrupted local plugin repositories** — If the git index of a cached plugin
+repo gets corrupted or desynced, the `git checkout` Noctalia runs to unpack
+plugins on startup will hang. Check `~/.cache/noctalia/noctalia.log` for lines
+like `git checkout ... took 20000ms`.
+
+_Fix:_ force-reset the plugin caches:
+
+```bash
+git -C ~/.local/state/noctalia/plugins/sources/community/repo reset --hard HEAD
+git -C ~/.local/state/noctalia/plugins/sources/official/repo reset --hard HEAD
+```
+
+<br/>
+
+## 💬 Community & Contact
+
+If you encounter issues, find a bug, or want to discuss Linux ricing:
+
+- 🐧 **Developer QQ**: `2040244628`
+- ✈️ **Telegram**: [@Echoes678](https://t.me/Echoes678)
+- 💬 **Linux Ricing QQ Group**: `631425889`
+- 🐛 **Submit a Bug Report**: Run `./install.sh` and select `6) 🐛 Generate Bug Report` to export diagnostic logs, or open an [Issue](https://github.com/ech678/NyxNiri/issues) on GitHub.
+
+<br/>
+
+## 💖 Support & Sponsor
+
+Maintaining NyxNiri requires continuous testing, script optimization, and documentation updates. If this project improved your Linux experience:
+
+- ☕️ **Sponsor via Afdian**: [afdian.com/a/Echoes678](https://afdian.com/a/Echoes678)
+- ⭐️ **GitHub Star**: If you like this project, please consider leaving a Star on GitHub! Your support is my greatest motivation!
+
+<br/>
