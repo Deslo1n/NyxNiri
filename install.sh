@@ -722,6 +722,11 @@ backup_configs() {
         sudo cp -rP "/etc/greetd/config.toml" "$backup_dir/greetd/"
         echo "  Backed up: /etc/greetd/config.toml"
     fi
+    if [ -e "/var/lib/noctalia-greeter/greeter.toml" ]; then
+        mkdir -p "$backup_dir/noctalia-greeter"
+        sudo cp -rP "/var/lib/noctalia-greeter/greeter.toml" "$backup_dir/noctalia-greeter/"
+        echo "  Backed up: /var/lib/noctalia-greeter/greeter.toml"
+    fi
 
     msg backup_done "$backup_dir"
 }
@@ -1049,6 +1054,15 @@ install_configs() {
                 echo -e "\e[1;33m[警告] 无法备份原有 greetd 配置文件\e[0m"
         fi
         sudo cp "$REPO_DIR/greetd/config.toml" /etc/greetd/config.toml 2>/dev/null || true
+    fi
+    if [ -f "$REPO_DIR/noctalia-greeter/greeter.toml" ]; then
+        if [ -f "/var/lib/noctalia-greeter/greeter.toml" ]; then
+            local backup_timestamp=$(date +%Y%m%d_%H%M%S)
+            sudo cp /var/lib/noctalia-greeter/greeter.toml "/var/lib/noctalia-greeter/greeter.toml.bak_${backup_timestamp}" 2>/dev/null || \
+                echo -e "\e[1;33m[警告] 无法备份原有 noctalia-greeter 配置文件\e[0m"
+        fi
+        sudo mkdir -p /var/lib/noctalia-greeter
+        sudo cp "$REPO_DIR/noctalia-greeter/greeter.toml" /var/lib/noctalia-greeter/greeter.toml 2>/dev/null || true
     fi
 
     msg copy_done
