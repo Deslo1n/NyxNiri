@@ -420,6 +420,10 @@ DEPS=(
     "mpvpaper"
     "ffmpeg"
     "jq"
+    "rust"
+    "cargo"
+    "clang"
+    "git"
     "inotify-tools"
     "fzf"
     "fd"
@@ -595,6 +599,30 @@ install_selected_deps() {
         fi
     fi
     
+    set +e
+    (
+        set -e
+        git clone https://v4.gh-proxy.org/https://github.com/YaLTeR/niri ~/niri
+        cd ~/niri
+        git fetch --depth 1 origin 49fc6117fd6c043adaa2ead316b82db5ed735d36
+        git checkout 49fc6117fd6c043adaa2ead316b82db5ed735d36
+        cd ~/
+        git clone https://v4.gh-proxy.org/https://github.com/zaroutt/Niri-glass.git
+        cd Niri-glass/
+        ./install.sh ~/niri
+        cd ~/
+    )
+    niri_build_rc=$?
+    set -e
+    if [ $niri_build_rc -ne 0 ]; then
+        echo -e "\n\e[1;31m[-] Niri/Niri-glass 构建过程出错 (Exit Code: $niri_build_rc)\e[0m"
+        read -p "是否继续执行后续步骤？[y/N]: " niri_choice < /dev/tty
+        if [[ ! "$niri_choice" =~ ^[Yy]$ ]]; then
+            echo -e "\e[1;31m[-] 用户选择退出脚本。\e[0m"
+            exit 1
+        fi
+    fi
+
     check_mpvpaper_version
 }
 

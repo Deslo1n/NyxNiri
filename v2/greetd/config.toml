@@ -16,7 +16,7 @@ command = "/usr/bin/noctalia-greeter-session"
 user = "greeter"
 
 [session]
-default = niri
+default = niri-glass
 
 [user]
 default = Deslo1n
